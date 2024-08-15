@@ -1,5 +1,5 @@
 const net = require('net');
-const chalk = require('chalk'); // Biblioteca pra estilizacao de texto no terminal
+const chalk = require('chalk'); // Libary for styling text in the terminal
 
 let clients = [];
 let clientCount = 0;
@@ -10,27 +10,28 @@ const colors = [
     chalk.cyan,
     chalk.yellow,
     chalk.red,
-    chalk.gray,
-    chalk.white,
+    // chalk.white, // bad contrast
+    // chalk.gray, // bad contrast
 ];
 
-// Criação do servidor TCP
+// Creating TCP server
 const server = net.createServer((socket) => {
     clientCount++;
-    const clientName = `Cliente ${clientCount}`;
+    const clientName = `Client ${clientCount}`;
     const clientColor = colors[(clientCount - 1) % colors.length];
 
     socket.clientName = clientName;
     socket.clientColor = clientColor;
     clients.push(socket);
 
-    const connectMessage = `>> ${clientName} conectado`;
+    const connectMessage = `>> ${clientName} connected`;
     console.log(clientColor(connectMessage));
 
     clients.forEach((client) => {
         client.write(clientColor(`${connectMessage}`));
     });
 
+    // Handles data received from a client
     socket.on('data', (data) => {
         const message = data.toString().trim();
 
@@ -41,6 +42,7 @@ const server = net.createServer((socket) => {
         const formattedMessage = `${clientName}: ${message}`;
         console.log(clientColor(formattedMessage));
 
+        // Broadcasts the message to all clients except who sent
         clients.forEach((client) => {
             if (client !== socket) {
                 client.write(clientColor(`${formattedMessage}`));
@@ -48,24 +50,28 @@ const server = net.createServer((socket) => {
         });
     });
 
-
+    // Handles client disconnection
     socket.on('end', () => {
-        const disconnectMessage = `>> ${clientName} desconectado`;
+        const disconnectMessage = `>> ${clientName} disconnected`;
         console.log(clientColor(disconnectMessage));
 
+        // Removes client from list of clients
         clients = clients.filter(client => client !== socket);
 
+        // Sends disconnection message to all clients
         clients.forEach((client) => {
             client.write(clientColor(`${disconnectMessage}`));
         });
     });
+
+    // Handles connection errors
     socket.on('error', (err) => {
-        console.error(clientColor(`Erro no ${clientName}:`), err.message);
+        console.error(clientColor(`Error in ${clientName}:`), err.message);
     });
 });
 
 const PORT = 3000;
 
 server.listen(PORT, () => {
-    console.log(`Servidor ouvindo na porta ${PORT}`);
+    console.log(`Server listening on port ${PORT}`);
 });
