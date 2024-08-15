@@ -7,7 +7,7 @@
 
 - **Multi-client support**: Multiple clients can connect to the server and chat in real-time.
 - **Color-coded messages**: Each client’s messages are displayed in a unique color, making it easy to differentiate between users.
-- **Notifications**: All clients are notified when a new client joins or leaves the chat.
+- **Input preservation**: If someone sends a message while you're typing, your input won't be interrupted.
 
 ## Requirements
 
@@ -59,3 +59,4 @@ You can open multiple terminals and run the above command in each to simulate mu
 
 - Make sure the server is running before trying to connect as a client.
 - Each client is assigned a unique color to differentiate their messages in the chat.
+- The application preserves your input while you're typing, even if someone else sends a message.
